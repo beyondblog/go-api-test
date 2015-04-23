@@ -2,11 +2,23 @@ package main
 
 import (
 	"fmt"
+	"github.com/mholt/binding"
 	"html/template"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"time"
 )
+
+type AppForm struct {
+	Host   string
+	Desc   string
+	Method string
+	Param  []struct {
+		Key   string
+		Value string
+	}
+}
 
 type httpMethod int
 
@@ -55,6 +67,29 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, nil)
 }
 
+func (l *AppForm) FieldMap() binding.FieldMap {
+	return binding.FieldMap{
+		&l.Host:   "host",
+		&l.Method: "method",
+		&l.Desc:   "desc",
+		&l.Param:  "param",
+	}
+}
+
+func apiHandler(w http.ResponseWriter, r *http.Request) {
+	appForm := new(AppForm)
+	err := binding.Bind(r, appForm)
+	if err.Handle(w) {
+		return
+	}
+	apiRequest := new(ApiRequest)
+
+	apiRequest.Desc = appForm.Desc
+	apiRequest.Host = appForm.Host
+	//apiRequest.Method = appForm.Method;
+
+}
+
 func main() {
 
 	//	requestArray := make([]ApiRequest, 0)
@@ -66,14 +101,22 @@ func main() {
 	//	}
 
 	http.HandleFunc("/", handler)
+
+	http.HandleFunc("/api/", apiHandler)
+
 	http.HandleFunc("/views/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("GET " + r.URL.Path[1:])
 		http.ServeFile(w, r, r.URL.Path[1:])
+
 	})
 
 	http.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("server", "go server")
-		fmt.Println("GET " + r.URL.Path[1:])
+		start := time.Now()
+		defer func(start time.Time) {
+			fmt.Printf(" %dms \n", ((time.Now().Sub(start).Nanoseconds() * 1.0) / 10000))
+		}(start)
+		fmt.Printf("GET " + r.URL.Path[1:])
 		http.ServeFile(w, r, r.URL.Path[1:])
 	})
 
