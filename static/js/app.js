@@ -30,7 +30,7 @@ routerApp.controller('appCtrl', function($scope, $http) {
     $scope.host = '';
     $scope.desc = '';
     $scope.message = '';
-    $scope.method = 'GET';
+    $scope.method = 0;
     $scope.params = [{}];
 
 
@@ -41,7 +41,7 @@ routerApp.controller('appCtrl', function($scope, $http) {
         $http.post('/api/add', {
             host: $scope.host,
             desc: $scope.desc,
-            method: $scope.method,
+            method: parseInt($scope.method),
             param: $scope.params,
         }).success(function(data) {
             $scope.message = data.message;
