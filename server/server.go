@@ -25,8 +25,12 @@ const (
 	POST HttpMethod = 1
 )
 
+type JsonResponse struct {
+	Code    int
+	Message string
+}
+
 type ApiRequest struct {
-	Name   string
 	Desc   string
 	Host   string
 	Param  map[string]string

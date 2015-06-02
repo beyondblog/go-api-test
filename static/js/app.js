@@ -45,7 +45,8 @@ routerApp.controller('appCtrl', function($scope, $http) {
             param: $scope.params,
         }).success(function(data) {
             $scope.message = data.message;
-            if (data.code == 200) {}
+            if (data.code == 200) {
+            }
         }).error(function() {
             $scope.message = '请求错误!';
         });
