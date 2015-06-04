@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"time"
+	//"time"
 
 	api "github.com/beyondblog/go-api-test/apiHandler"
 	"html/template"
@@ -38,11 +38,11 @@ func main() {
 
 	http.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("server", "go server")
-		start := time.Now()
-		defer func(start time.Time) {
-			fmt.Printf(" %dms \n", ((time.Now().Sub(start).Nanoseconds() * 1.0) / 10000))
-		}(start)
-		fmt.Printf("GET " + r.URL.Path[1:])
+		//start := time.Now()
+		//defer func(start time.Time) {
+		//	fmt.Printf(" %dms \n", ((time.Now().Sub(start).Nanoseconds() * 1.0) / 10000))
+		//}(start)
+		fmt.Println("GET " + r.URL.Path[1:])
 		http.ServeFile(w, r, r.URL.Path[1:])
 	})
 

@@ -32,7 +32,7 @@ func Add(w http.ResponseWriter, r *http.Request) {
 	var jsonRes JsonResponse
 
 	//check host config exist
-	configFile := "config/" + apiRequest.Host + "_config.json"
+	configFile := CONFIG_PATH + apiRequest.Host + "_config.json"
 
 	w.Header().Set("Content-Type:", "application/json")
 	jsonRes.Code = 200

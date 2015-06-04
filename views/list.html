@@ -1,1 +1,21 @@
-<h1>list</h1>
+<h1>Host List</h1>
+<div class="starter-template">
+    <table class="table table-condensed">
+        <tr>
+            <th>
+                Host Name
+            </th>
+            <th>
+                Request Count
+            </th>
+        </tr>
+        <tr ng-repeat="request in requests">
+            <td>
+                {{request.HostName}} 
+            </td>
+            <td>
+                {{request.Count}} 
+            </td>
+        </tr>
+     </table>
+</div>

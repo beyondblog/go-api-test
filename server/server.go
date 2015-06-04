@@ -25,9 +25,12 @@ const (
 	POST HttpMethod = 1
 )
 
+const CONFIG_PATH = "config/"
+
 type JsonResponse struct {
 	Code    int
 	Message string
+	Data    interface{}
 }
 
 type ApiRequest struct {
