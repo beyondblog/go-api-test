@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"net/http"
 	//"time"
-
 	api "github.com/beyondblog/go-api-test/apiHandler"
 	"html/template"
+	"log"
+	"os"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -23,6 +24,11 @@ func main() {
 	//	for _, request := range requestArray {
 	//		PrintResponse(RunTest(request))
 	//	}
+
+	logFile, _ := os.OpenFile("http-test.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	defer logFile.Close()
+	log.SetOutput(logFile)
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
 	http.HandleFunc("/", handler)
 
@@ -47,5 +53,6 @@ func main() {
 	})
 
 	fmt.Println("Server start at 127.0.0.1:8080")
+	log.Println("Server start at 127.0.0.1:8080")
 	http.ListenAndServe(":8080", nil)
 }

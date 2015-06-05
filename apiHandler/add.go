@@ -6,11 +6,13 @@ import (
 	. "github.com/beyondblog/go-api-test/server"
 	"github.com/mholt/binding"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 )
 
 func Add(w http.ResponseWriter, r *http.Request) {
+	log.Println("add request")
 	appForm := new(AppForm)
 	err := binding.Bind(r, appForm)
 	if err.Handle(w) {
@@ -23,24 +25,30 @@ func Add(w http.ResponseWriter, r *http.Request) {
 	apiRequest.Param = make(map[string]string)
 	apiRequest.Method = appForm.Method
 
-	for _, param := range appForm.Param {
-		if len(param.Key) > 0 {
-			apiRequest.Param[param.Key] = param.Value
-		}
-	}
-
-	var jsonRes JsonResponse
-
-	//check host config exist
-	configFile := CONFIG_PATH + apiRequest.Host + "_config.json"
-
-	w.Header().Set("Content-Type:", "application/json")
-	jsonRes.Code = 200
-	if err := writeToConfig(configFile, apiRequest); err != nil {
+	if len(apiRequest.Host) == 0 {
 		jsonRes.Code = 400
-		jsonRes.Message = err.Error()
-	}
+		jsonRes.Message = "host error"
+	} else {
 
+		for _, param := range appForm.Param {
+			if len(param.Key) > 0 {
+				apiRequest.Param[param.Key] = param.Value
+			}
+		}
+
+		var jsonRes JsonResponse
+
+		//check host config exist
+		configFile := CONFIG_PATH + apiRequest.Host + "_config.json"
+
+		jsonRes.Code = 200
+		if err := writeToConfig(configFile, apiRequest); err != nil {
+			jsonRes.Code = 400
+			jsonRes.Message = err.Error()
+		}
+
+	}
+	w.Header().Set("Content-Type:", "application/json")
 	result, _ := json.Marshal(jsonRes)
 	w.Write(result)
 }

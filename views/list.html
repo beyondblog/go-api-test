@@ -1,12 +1,15 @@
 <h1>Host List</h1>
 <div class="starter-template">
-    <table class="table table-condensed">
+    <table class="table table-condensed table-bordered">
         <tr>
             <th>
                 Host Name
             </th>
             <th>
                 Request Count
+            </th>
+            <th>
+                option
             </th>
         </tr>
         <tr ng-repeat="request in requests">
@@ -15,6 +18,9 @@
             </td>
             <td>
                 {{request.Count}} 
+            </td>
+            <td>
+                <button type="button" class="btn btn-default btn-xs">Edit</button>
             </td>
         </tr>
      </table>

@@ -1,30 +1,30 @@
-var routerApp = angular.module('httpTest', ['ngRoute']);
+var routerApp = angular.module('httpTest', ['ui.router']);
 
-routerApp.config(['$routeProvider', '$locationProvider',
-    function($routeProvider, $locationProvider) {
-        $locationProvider.html5Mode({
-            enabled: true,
-            requireBase: false
+routerApp.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
+
+    $locationProvider.html5Mode({
+        enabled: true,
+        requireBase: false
+    });
+
+    $urlRouterProvider.otherwise('/');
+
+    $stateProvider
+        .state('add', {
+            url: '/',
+            templateUrl: '/views/add.html',
+            controller: 'add'
+        })
+        .state('list', {
+            url: '/list',
+            templateUrl: '/views/list.html',
+            controller: 'list'
+        })
+        .state('about', {
+            url: '/about',
+            templateUrl: '/views/about.html'
         });
-
-        $routeProvider
-            .when('/', {
-                templateUrl: '/views/add.html',
-                controller: 'add'
-            })
-            .when('/list', {
-                templateUrl: '/views/list.html',
-                controller: 'list'
-            })
-            .when('/about', {
-                templateUrl: '/views/about.html',
-                controller: 'add'
-            })
-            .otherwise({
-                redirectTo: '/'
-            });
-    }
-]);
+});
 
 routerApp.controller('add', function($scope, $http, $location) {
     $scope.host = '';
@@ -33,7 +33,7 @@ routerApp.controller('add', function($scope, $http, $location) {
     $scope.method = 0;
     $scope.params = [{}];
 
-    $scope.isActive = function (viewLocation) { 
+    $scope.isActive = function(viewLocation) {
         return viewLocation === $location.path();
     };
 
@@ -72,8 +72,8 @@ routerApp.controller('add', function($scope, $http, $location) {
     };
 
 }).controller('list', function($scope, $http, $location) {
-    
-    $scope.isActive = function (viewLocation) { 
+
+    $scope.isActive = function(viewLocation) {
         return viewLocation === $location.path();
     };
 
