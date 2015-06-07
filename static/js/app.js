@@ -1,5 +1,30 @@
 var routerApp = angular.module('httpTest', ['ui.router']);
 
+
+routerApp.factory('editApi', function() {
+    var service = {};
+    var requests;
+    var hostName;
+
+    service.setRequests = function(requests) {
+        this.requests = requests;
+    };
+
+    service.getRequests = function() {
+        return this.requests;
+    };
+
+    service.setHostName = function(hostName) {
+        this.hostName = hostName;
+    };
+
+    service.getHostName = function() {
+        return this.hostName;
+    };
+
+    return service;
+});
+
 routerApp.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
 
     $locationProvider.html5Mode({
@@ -23,6 +48,10 @@ routerApp.config(function($stateProvider, $urlRouterProvider, $locationProvider)
         .state('about', {
             url: '/about',
             templateUrl: '/views/about.html'
+        }).state('edit', {
+            url: '/edit',
+            templateUrl: '/views/edit.html',
+            controller: 'edit'
         });
 });
 
@@ -32,10 +61,6 @@ routerApp.controller('add', function($scope, $http, $location) {
     $scope.message = '';
     $scope.method = 0;
     $scope.params = [{}];
-
-    $scope.isActive = function(viewLocation) {
-        return viewLocation === $location.path();
-    };
 
     $scope.add = function() {
         $http.post('/api/add', {
@@ -53,7 +78,7 @@ routerApp.controller('add', function($scope, $http, $location) {
                 $scope.params = [{}];
             }
         }).error(function() {
-            $scope.message = '请求错误!';
+            $scope.message = 'server error : (';
         });
     };
 
@@ -71,22 +96,47 @@ routerApp.controller('add', function($scope, $http, $location) {
         if (~index) $scope.params.splice(index, 1);
     };
 
-}).controller('list', function($scope, $http, $location) {
-
-    $scope.isActive = function(viewLocation) {
-        return viewLocation === $location.path();
-    };
-
+}).controller('list', function($scope, $http, $location, editApi) {
+    $scope.requests = {};
     $scope.init = function() {
         $http.get('/api/list').success(function(data) {
             if (data.Code == 200) {
                 $scope.requests = data.Data;
             }
         }).error(function() {
-            $scope.message = '请求错误!';
+            $scope.message = 'server error : (';
         });
+    };
+
+    $scope.edit = function() {
+        editApi.setHostName(this.$$watchers[1].last);
+        editApi.setRequests($scope.requests[this.$index].Requests);
+        $location.path("/edit");
     };
 
     $scope.init();
 
-});
+}).controller('edit', function($scope, $http, $location, editApi) {
+
+    $scope.init = function() {
+        $scope.hostName = editApi.getHostName();
+        $scope.requests = editApi.getRequests();
+
+        if ($scope.hostName == null || $scope.requests == null) {
+            $location.path("/list");
+        }
+    };
+
+    $scope.init();
+}).filter("httpMethod", function() {
+    return function(type) {
+        switch(type) {
+            case 0:
+                return "GET";
+            case 1:
+                return "POST";
+            default:
+                "UNKONW";
+        }
+    };
+})

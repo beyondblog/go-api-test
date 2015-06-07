@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	. "github.com/beyondblog/go-api-test/server"
 	"io/ioutil"
 	"net/http"
@@ -12,6 +11,7 @@ import (
 type ApiRequestInfo struct {
 	HostName string
 	Count    int
+	Requests []ApiRequest
 }
 
 func List(w http.ResponseWriter, r *http.Request) {
@@ -20,19 +20,17 @@ func List(w http.ResponseWriter, r *http.Request) {
 
 	for _, f := range files {
 		if i := strings.LastIndex(f.Name(), "_config.json"); i > 0 {
-			//解析
+			//parser
 			hostRequests := []ApiRequest{}
 			file, err := ioutil.ReadFile(CONFIG_PATH + f.Name())
 			if err != nil {
-				fmt.Println("123")
 				continue
 			}
 
 			if err := json.Unmarshal(file, &hostRequests); err != nil {
-				fmt.Println("456")
 				continue
 			}
-			hosts = append(hosts, ApiRequestInfo{HostName: f.Name()[:i], Count: len(hostRequests)})
+			hosts = append(hosts, ApiRequestInfo{HostName: f.Name()[:i], Count: len(hostRequests), Requests: hostRequests})
 		}
 	}
 

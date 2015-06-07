@@ -24,6 +24,7 @@ func Add(w http.ResponseWriter, r *http.Request) {
 	apiRequest.Host = appForm.Host
 	apiRequest.Param = make(map[string]string)
 	apiRequest.Method = appForm.Method
+	var jsonRes JsonResponse
 
 	if len(apiRequest.Host) == 0 {
 		jsonRes.Code = 400
@@ -35,8 +36,6 @@ func Add(w http.ResponseWriter, r *http.Request) {
 				apiRequest.Param[param.Key] = param.Value
 			}
 		}
-
-		var jsonRes JsonResponse
 
 		//check host config exist
 		configFile := CONFIG_PATH + apiRequest.Host + "_config.json"
