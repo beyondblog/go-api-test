@@ -52,7 +52,12 @@ routerApp.config(function($stateProvider, $urlRouterProvider, $locationProvider)
             url: '/edit',
             templateUrl: '/views/edit.html',
             controller: 'edit'
+        }).state('editRequest', {
+            url: '/edit/:id',
+            templateUrl: '/views/editRequest.html',
+            controller: 'editRequest'
         });
+
 });
 
 routerApp.controller('add', function($scope, $http, $location) {
@@ -117,7 +122,6 @@ routerApp.controller('add', function($scope, $http, $location) {
     $scope.init();
 
 }).controller('edit', function($scope, $http, $location, editApi) {
-
     $scope.init = function() {
         $scope.hostName = editApi.getHostName();
         $scope.requests = editApi.getRequests();
@@ -125,6 +129,22 @@ routerApp.controller('add', function($scope, $http, $location) {
         if ($scope.hostName == null || $scope.requests == null) {
             $location.path("/list");
         }
+    };
+
+    $scope.editRequest = function() {
+        $location.path("/edit/" + $scope.hostName);
+    };
+
+    $scope.init();
+}).controller('editRequest', function($scope, $http, $location) {
+    $scope.host = '';
+    $scope.desc = '';
+    $scope.message = '';
+    $scope.method = 0;
+    $scope.params = [{}];
+
+    $scope.init = function() {
+        $scope.hostName =  'beyond.com';
     };
 
     $scope.init();
