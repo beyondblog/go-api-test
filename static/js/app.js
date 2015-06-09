@@ -4,7 +4,16 @@ var routerApp = angular.module('httpTest', ['ui.router']);
 routerApp.factory('editApi', function() {
     var service = {};
     var requests;
+    var editRequest;
     var hostName;
+
+    service.setEditRequest = function(request) {
+        this.editRequest = request;
+    };
+
+    service.getEditRequest = function() {
+        return this.editRequest;
+    };
 
     service.setRequests = function(requests) {
         this.requests = requests;
@@ -87,8 +96,6 @@ routerApp.controller('add', function($scope, $http, $location) {
         });
     };
 
-
-
     $scope.keyvalueClick = function() {
         var last = $scope.params[$scope.params.length - 1];
         if (last.key != null || last.value != null) {
@@ -133,24 +140,55 @@ routerApp.controller('add', function($scope, $http, $location) {
 
     $scope.editRequest = function() {
         $location.path("/edit/" + $scope.hostName);
+        editApi.setEditRequest($scope.requests[this.$index]);
     };
 
     $scope.init();
-}).controller('editRequest', function($scope, $http, $location) {
-    $scope.host = '';
-    $scope.desc = '';
-    $scope.message = '';
-    $scope.method = 0;
-    $scope.params = [{}];
-
+}).controller('editRequest', function($scope, $http, $location, editApi) {
     $scope.init = function() {
-        $scope.hostName =  'beyond.com';
+        var request = editApi.getEditRequest();
+
+        if (request == null) {
+            $location.path("/list");
+            return;
+        }
+
+        $scope.hostName = editApi.getHostName();
+        $scope.host = request.Host;
+        $scope.desc = request.Desc;
+        $scope.message = request.Message;
+        $scope.method = request.Method;
+
+        //map to array
+        var array = [],
+            item;
+        for (var type in request.Param) {
+            if (request.Param.hasOwnProperty(type)) {
+                item = {};
+                item.key = type;
+                item.value = request.Param[type];
+                array.push(item);
+            }
+        }
+        $scope.params = array;
+    };
+
+    $scope.keyvalueClick = function() {
+        var last = $scope.params[$scope.params.length - 1];
+        if (last.key != null || last.value != null) {
+            $scope.params.push({})
+        }
+    };
+
+    $scope.delParam = function() {
+        var index = this.$index;
+        if (~index) $scope.params.splice(index, 1);
     };
 
     $scope.init();
 }).filter("httpMethod", function() {
     return function(type) {
-        switch(type) {
+        switch (type) {
             case 0:
                 return "GET";
             case 1:
