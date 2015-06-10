@@ -7,7 +7,8 @@
                 <div class="panel-body">
                     <div class="list-group" ng-repeat="request in requests">
                         <a href="#" class="list-group-item">
-                            {{request.Host}} 
+                            <span class="badge">{{request.Method | httpMethod}}</span>
+                            {{request.Host}}
                         </a>
                     </div>
 
@@ -62,7 +63,7 @@
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button class="btn btn-default" ng-click="add()">Add</button>
+                        <button class="btn btn-default" ng-click="save()">Save</button>
                     </div>
                 </div>
             </form>

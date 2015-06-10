@@ -145,6 +145,8 @@ routerApp.controller('add', function($scope, $http, $location) {
 
     $scope.init();
 }).controller('editRequest', function($scope, $http, $location, editApi) {
+    $scope.requests = {};
+
     $scope.init = function() {
         var request = editApi.getEditRequest();
 
@@ -171,6 +173,7 @@ routerApp.controller('add', function($scope, $http, $location) {
             }
         }
         $scope.params = array;
+        $scope.requests = editApi.getRequests();
     };
 
     $scope.keyvalueClick = function() {
@@ -183,6 +186,23 @@ routerApp.controller('add', function($scope, $http, $location) {
     $scope.delParam = function() {
         var index = this.$index;
         if (~index) $scope.params.splice(index, 1);
+    };
+
+    $scope.save = function() {
+        $http.post('/api/save', {
+            host: $scope.host,
+            desc: $scope.desc,
+            method: parseInt($scope.method),
+            param: $scope.params,
+        }).success(function(data) {
+            $scope.message = data.message;
+            if (data.Code == 200) {
+
+            }
+        }).error(function() {
+            $scope.message = 'server error : (';
+        });
+       
     };
 
     $scope.init();
