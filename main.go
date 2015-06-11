@@ -36,6 +36,8 @@ func main() {
 
 	http.HandleFunc("/api/list", api.List)
 
+	http.HandleFunc("/api/save", api.Save)
+
 	http.HandleFunc("/views/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("GET " + r.URL.Path[1:])
 		http.ServeFile(w, r, r.URL.Path[1:])

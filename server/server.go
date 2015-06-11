@@ -1,11 +1,13 @@
 package server
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/mholt/binding"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 )
 
 const CONFIG_PATH = "config/"
@@ -52,13 +54,53 @@ func PrintResponse(response ApiResponse) {
 	fmt.Println(response.Result)
 }
 
-func (l *AppForm) FieldMap() binding.FieldMap {
-	return binding.FieldMap{
-		&l.Host:   "host",
-		&l.Method: "method",
-		&l.Desc:   "desc",
-		&l.Param:  "param",
+func SaveToConfig(configFile string, apiRequest ApiRequest, index int) error {
+	hostRequests := []ApiRequest{}
+	if _, err := os.Stat(configFile); err == nil {
+		//file is exist append
+		file, err := ioutil.ReadFile(configFile)
+		if err != nil {
+			return errors.New("config error")
+		}
+
+		if err := json.Unmarshal(file, &hostRequests); err != nil {
+			return errors.New("config error")
+		}
 	}
+
+	hostRequests[index].Desc = apiRequest.Desc
+	hostRequests[index].Host = apiRequest.Host
+	hostRequests[index].Method = apiRequest.Method
+	hostRequests[index].Param = apiRequest.Param
+
+	fout, _ := os.Create(configFile)
+	defer fout.Close()
+	b, _ := json.Marshal(hostRequests)
+	fout.Write(b)
+	return nil
+
+}
+
+func WriteToConfig(configFile string, apiRequest ApiRequest) error {
+	hostRequests := []ApiRequest{}
+	if _, err := os.Stat(configFile); err == nil {
+		//file is exist append
+		file, err := ioutil.ReadFile(configFile)
+		if err != nil {
+			return errors.New("config error")
+		}
+
+		if err := json.Unmarshal(file, &hostRequests); err != nil {
+			return errors.New("config error")
+		}
+	}
+
+	hostRequests = append(hostRequests, apiRequest)
+	fout, _ := os.Create(configFile)
+	defer fout.Close()
+	b, _ := json.Marshal(hostRequests)
+	fout.Write(b)
+	return nil
 }
 
 //func main() {

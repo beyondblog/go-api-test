@@ -8,8 +8,8 @@ import (
 	"net/http"
 )
 
-func Add(w http.ResponseWriter, r *http.Request) {
-	log.Println("add request")
+func Save(w http.ResponseWriter, r *http.Request) {
+	log.Println("save request")
 	appForm := new(AppForm)
 	err := binding.Bind(r, appForm)
 	if err.Handle(w) {
@@ -21,6 +21,7 @@ func Add(w http.ResponseWriter, r *http.Request) {
 	apiRequest.Host = appForm.Host
 	apiRequest.Param = make(map[string]string)
 	apiRequest.Method = appForm.Method
+	var index = appForm.Index
 	var jsonRes JsonResponse
 
 	if len(apiRequest.Host) == 0 {
@@ -38,7 +39,7 @@ func Add(w http.ResponseWriter, r *http.Request) {
 		configFile := CONFIG_PATH + apiRequest.Host + "_config.json"
 
 		jsonRes.Code = 200
-		if err := WriteToConfig(configFile, apiRequest); err != nil {
+		if err := SaveToConfig(configFile, apiRequest, index); err != nil {
 			jsonRes.Code = 400
 			jsonRes.Message = err.Error()
 		}

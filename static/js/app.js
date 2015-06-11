@@ -6,6 +6,15 @@ routerApp.factory('editApi', function() {
     var requests;
     var editRequest;
     var hostName;
+    var index;
+
+    service.setIndex = function(index) {
+        this.index = index;
+    };
+
+    service.getIndex = function() {
+        return this.index;
+    };
 
     service.setEditRequest = function(request) {
         this.editRequest = request;
@@ -141,6 +150,7 @@ routerApp.controller('add', function($scope, $http, $location) {
     $scope.editRequest = function() {
         $location.path("/edit/" + $scope.hostName);
         editApi.setEditRequest($scope.requests[this.$index]);
+        editApi.setIndex(this.$index);
     };
 
     $scope.init();
@@ -194,10 +204,11 @@ routerApp.controller('add', function($scope, $http, $location) {
             desc: $scope.desc,
             method: parseInt($scope.method),
             param: $scope.params,
+            index: editApi.getIndex()
         }).success(function(data) {
             $scope.message = data.message;
             if (data.Code == 200) {
-
+                $location.path("/list");
             }
         }).error(function() {
             $scope.message = 'server error : (';
