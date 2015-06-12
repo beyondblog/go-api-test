@@ -147,6 +147,33 @@ routerApp.controller('add', function($scope, $http, $location) {
         }
     };
 
+    $scope.runRequest = function() {
+        var request = $scope.requests[this.$index];
+        //map to array
+        var array = [],
+            item;
+        for (var type in request.Param) {
+            if (request.Param.hasOwnProperty(type)) {
+                item = {};
+                item.key = type;
+                item.value = request.Param[type];
+                array.push(item);
+            }
+        }
+
+        $http.post('/api/run', {
+            host: request.Host,
+            desc: request.Desc,
+            method: parseInt(request.Method),
+            param: array,
+        }).success(function(data) {
+            alert(data.Message);
+        }).error(function() {
+            $scope.message = 'server error : (';
+        });
+
+    };
+
     $scope.editRequest = function() {
         $location.path("/edit/" + $scope.hostName);
         editApi.setEditRequest($scope.requests[this.$index]);
@@ -213,7 +240,7 @@ routerApp.controller('add', function($scope, $http, $location) {
         }).error(function() {
             $scope.message = 'server error : (';
         });
-       
+
     };
 
     $scope.init();

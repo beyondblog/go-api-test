@@ -8,8 +8,9 @@ import (
 	"net/http"
 )
 
-func Save(w http.ResponseWriter, r *http.Request) {
-	log.Println("save request")
+func Run(w http.ResponseWriter, r *http.Request) {
+	log.Println("run request")
+
 	appForm := new(AppForm)
 	err := binding.Bind(r, appForm)
 	if err.Handle(w) {
@@ -21,32 +22,28 @@ func Save(w http.ResponseWriter, r *http.Request) {
 	apiRequest.Host = appForm.Host
 	apiRequest.Param = make(map[string]string)
 	apiRequest.Method = appForm.Method
-	var index = appForm.Index
 	var jsonRes JsonResponse
 
 	if len(apiRequest.Host) == 0 {
 		jsonRes.Code = 400
 		jsonRes.Message = "host error"
 	} else {
-
 		for _, param := range appForm.Param {
 			if len(param.Key) > 0 {
 				apiRequest.Param[param.Key] = param.Value
 			}
 		}
-
-		//check host config exist
-		configFile := CONFIG_PATH + apiRequest.Host + "_config.json"
-
-		jsonRes.Code = 200
-		log.Println(index)
-		if err := SaveToConfig(configFile, apiRequest, index); err != nil {
-			jsonRes.Code = 400
+		if response, err := RunTest(apiRequest); err != nil {
+			jsonRes.Code = 500
 			jsonRes.Message = err.Error()
+		} else {
+			jsonRes.Code = response.Code
+			jsonRes.Message = response.Result
 		}
 
 	}
 	w.Header().Set("Content-Type:", "application/json")
 	result, _ := json.Marshal(jsonRes)
 	w.Write(result)
+
 }

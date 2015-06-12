@@ -24,16 +24,18 @@ type ApiRequest struct {
 	Param  map[string]string
 	Method HttpMethod
 }
-
 type ApiResponse struct {
 	Code   int
 	Result string
 }
 
-func RunTest(request ApiRequest) ApiResponse {
-	var response ApiResponse
+func RunTest(request ApiRequest) (reqp *ApiResponse, err error) {
+	var response *ApiResponse
+	var resp *http.Response
+	var e error
+
 	if request.Method == GET {
-		http.Get(request.Host)
+		resp, e = http.Get(request.Host)
 	} else {
 		formData := make(url.Values)
 		for key, value := range request.Param {
@@ -41,12 +43,22 @@ func RunTest(request ApiRequest) ApiResponse {
 				formData.Add(key, value)
 			}
 		}
-		resp, _ := http.PostForm(request.Host, formData)
-		body, _ := ioutil.ReadAll(resp.Body)
-		response.Code = resp.StatusCode
-		response.Result = string(body)
+		resp, e = http.PostForm(request.Host, formData)
+
 	}
-	return response
+
+	if e != nil {
+		err = e
+		return
+	}
+
+	if body, e := ioutil.ReadAll(resp.Body); e != nil {
+		err = e
+		return
+	} else {
+		response = &ApiResponse{Code: resp.StatusCode, Result: string(body)}
+	}
+	return response, err
 }
 
 func PrintResponse(response ApiResponse) {
