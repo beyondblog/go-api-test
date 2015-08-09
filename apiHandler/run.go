@@ -26,7 +26,7 @@ func Run(w http.ResponseWriter, r *http.Request) {
 
 	if len(apiRequest.Host) == 0 {
 		jsonRes.Code = 400
-		jsonRes.Message = "host error"
+		jsonRes.Message = "Host error"
 	} else {
 		for _, param := range appForm.Param {
 			if len(param.Key) > 0 {

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -35,7 +36,7 @@ func RunTest(request ApiRequest) (reqp *ApiResponse, err error) {
 	var e error
 
 	if request.Method == GET {
-		resp, e = http.Get(request.Host)
+		resp, e = http.Get("http://" + request.Host)
 	} else {
 		formData := make(url.Values)
 		for key, value := range request.Param {
@@ -44,7 +45,6 @@ func RunTest(request ApiRequest) (reqp *ApiResponse, err error) {
 			}
 		}
 		resp, e = http.PostForm(request.Host, formData)
-
 	}
 
 	if e != nil {
@@ -56,8 +56,10 @@ func RunTest(request ApiRequest) (reqp *ApiResponse, err error) {
 		err = e
 		return
 	} else {
+		log.Println("body: " + string(body))
 		response = &ApiResponse{Code: resp.StatusCode, Result: string(body)}
 	}
+
 	return response, err
 }
 
