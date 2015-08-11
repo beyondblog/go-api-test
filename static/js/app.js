@@ -138,6 +138,8 @@ routerApp.controller('add', function($scope, $http, $location) {
     $scope.init();
 
 }).controller('edit', function($scope, $http, $location, editApi) {
+
+    $scope.response = null;
     $scope.init = function() {
         $scope.hostName = editApi.getHostName();
         $scope.requests = editApi.getRequests();
@@ -167,7 +169,7 @@ routerApp.controller('add', function($scope, $http, $location) {
             method: parseInt(request.Method),
             param: array,
         }).success(function(data) {
-            alert(data.Message);
+            $scope.response = data.Message;
         }).error(function() {
             $scope.message = 'server error : (';
         });

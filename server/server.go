@@ -44,7 +44,7 @@ func RunTest(request ApiRequest) (reqp *ApiResponse, err error) {
 				formData.Add(key, value)
 			}
 		}
-		resp, e = http.PostForm(request.Host, formData)
+		resp, e = http.PostForm("http://"+request.Host, formData)
 	}
 
 	if e != nil {
