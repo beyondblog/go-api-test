@@ -92,7 +92,7 @@ routerApp.controller('add', function($scope, $http, $location) {
             method: parseInt($scope.method),
             param: $scope.params,
         }).success(function(data) {
-            $scope.message = data.message;
+            $scope.message = data.Message;
             if (data.Code == 200) {
                 $scope.host = '';
                 $scope.desc = '';

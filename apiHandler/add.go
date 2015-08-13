@@ -6,6 +6,7 @@ import (
 	"github.com/mholt/binding"
 	"log"
 	"net/http"
+	"regexp"
 )
 
 func Add(w http.ResponseWriter, r *http.Request) {
@@ -23,10 +24,17 @@ func Add(w http.ResponseWriter, r *http.Request) {
 	apiRequest.Method = appForm.Method
 	var jsonRes JsonResponse
 
+	re := regexp.MustCompile("^(http://|https://)?((?:[A-Za-z0-9]+-[A-Za-z0-9]+|[A-Za-z0-9]+)\\.)+([A-Za-z]+)[/\\?\\:]?.*$")
+
 	if len(apiRequest.Host) == 0 {
 		jsonRes.Code = 400
 		jsonRes.Message = "host error"
+	} else if r := re.FindString(apiRequest.Host); r == "" {
+		jsonRes.Code = 400
+		jsonRes.Message = "host format error"
 	} else {
+
+		//check host
 
 		for _, param := range appForm.Param {
 			if len(param.Key) > 0 {
